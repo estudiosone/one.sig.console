@@ -5,6 +5,7 @@
         <el-breadcrumb-item>SIG</el-breadcrumb-item>
         <el-breadcrumb-item>Cloud</el-breadcrumb-item>
         <el-breadcrumb-item v-if="route === '/cloud/media'">Medios</el-breadcrumb-item>
+        <el-breadcrumb-item v-if="route === '/cloud/pages'">Páginas</el-breadcrumb-item>
       </el-breadcrumb>
     </div>
     <span class="title">Cloud</span>
