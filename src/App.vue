@@ -151,20 +151,6 @@ body {
     align-items: flex-start;
     .sub-page {
       width: 100%;
-
-      .sub-title {
-        // position: absolute;
-        // top: 24px;
-        // left: 24px;
-        // font-size: 24px;
-        // font-weight: 800;
-        // z-index: 100;
-      }
-
-      .el-table {
-        // position: absolute;
-        // top: 72px;
-      }
       .sub-illustration {
         position: absolute;
         display: flex;
