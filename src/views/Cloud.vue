@@ -1,15 +1,15 @@
 <template>
-  <div class="page page-cloud">
-    <div class="breadcrumb">
+  <template-page>
+    <template slot="breadcrumb">
       <el-breadcrumb separator="/">
         <el-breadcrumb-item>SIG</el-breadcrumb-item>
         <el-breadcrumb-item>Cloud</el-breadcrumb-item>
         <el-breadcrumb-item v-if="route === '/cloud/media'">Medios</el-breadcrumb-item>
         <el-breadcrumb-item v-if="route === '/cloud/pages'">Páginas</el-breadcrumb-item>
       </el-breadcrumb>
-    </div>
-    <span class="title">Cloud</span>
-    <div class="menu">
+    </template>
+    <template slot="title">Cloud</template>
+    <template slot="menu">
       <el-menu
         default-active="/cloud"
         class="el-menu-demo"
@@ -19,11 +19,8 @@
         <el-menu-item index="/cloud/media">Medios</el-menu-item>
         <el-menu-item index="/cloud/pages">Páginas</el-menu-item>
       </el-menu>
-    </div>
-    <div class="sub-router">
-      <router-view/>
-    </div>
-  </div>
+    </template>
+  </template-page>
 </template>
 
 <script>
