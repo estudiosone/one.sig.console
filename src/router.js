@@ -20,13 +20,35 @@ export default new Router({
           component: () => import(/* webpackChunkName: "page-cloud-dashboard" */ './views/cloud/Dashboard.vue'),
         },
         {
-          path: '/*',
+          path: '/cloud/media',
+          component: () => import(/* webpackChunkName: "page-cloud-media" */ './views/cloud/Media.vue'),
+        },
+        {
+          path: '/cloud/*',
           component: () => import(/* webpackChunkName: "page-error-404" */ './views/error/E404.vue'),
         },
       ],
     },
     {
-      path: '/*',
+      path: '/settings',
+      component: () => import(/* webpackChunkName: "page-settings" */ './views/Settings.vue'),
+      children: [
+        {
+          path: '/',
+          component: () => import(/* webpackChunkName: "page-settings-dashboard" */ './views/settings/Dashboard.vue'),
+        },
+        {
+          path: '/settings/basic-data/people/people',
+          component: () => import(/* webpackChunkName: "page-settings-dashboard" */ './views/settings/basic-data/people/People.vue'),
+        },
+        {
+          path: '/settings/*',
+          component: () => import(/* webpackChunkName: "page-error-404" */ './views/error/E404.vue'),
+        },
+      ],
+    },
+    {
+      path: '*',
       component: () => import(/* webpackChunkName: "page-error-404" */ './views/error/E404.vue'),
     },
   ],
