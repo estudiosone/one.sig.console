@@ -13,7 +13,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: ["*.*"],
+      files: ['*.*'],
       rules: {
         'max-len': 'off', // disables line length check
       },
