@@ -17,7 +17,9 @@
         <span>{{ item.name }}</span>
       </el-menu-item>
     </el-menu>
-    <router-view/>
+    <div class="router">
+      <router-view/>
+    </div>
   </div>
 </template>
 
@@ -118,7 +120,7 @@ body {
   .menu {
     position: absolute;
     width: 100%;
-    top: 120px;
+    top: 96px;
 
     .el-menu-item.is-active {
       font-weight: bold;
@@ -134,6 +136,30 @@ body {
     z-index: 1;
     svg {
       width: 80%;
+    }
+  }
+  .sub-router {
+    position: absolute;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    top: 156px;
+    .sub-page {
+      .sub-illustration {
+        position: absolute;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        svg {
+          width: 80%;
+        }
+      }
     }
   }
 }

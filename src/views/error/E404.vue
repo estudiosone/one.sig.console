@@ -5,10 +5,7 @@
       <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"
         id="Layer_1" x="0px" y="0px" viewBox="0 0 800 600" style="enable-background:new 0 0 800 600;"
         xml:space="preserve">
-
-        <rect width="800" height="600" style="fill:#FFFFFF;" />
         <g>
-
           <radialGradient id="SVGID_1_" cx="530.4866" cy="170.7412" r="139.5837"
             gradientTransform="matrix(0.9994 0 0 0.9994 0.3317 -0.1388)"
             gradientUnits="userSpaceOnUse">

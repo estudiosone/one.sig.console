@@ -17,7 +17,7 @@ export default new Router({
       children: [
         {
           path: '/',
-          component: () => import(/* webpackChunkName: "page-cloud" */ './views/Cloud.vue'),
+          component: () => import(/* webpackChunkName: "page-cloud-dashboard" */ './views/cloud/Dashboard.vue'),
         },
         {
           path: '/*',
