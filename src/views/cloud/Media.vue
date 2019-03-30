@@ -5,7 +5,7 @@
     </template>
     <template slot="actions">
       <el-button-group>
-        <el-button>
+        <el-button @click="$refs.file.click()">
           <div  style="display: flex; align-items: center;">
             <img style="width: 24px;" src="https://firebasestorage.googleapis.com/v0/b/one-sig-uy.appspot.com/o/console%2Fassets%2Ficons%2Fcolor%2Fsvg%2Fplus.svg?alt=media&token=4a9d0286-fe5e-4d35-8faf-bb9afd0e0f2e" alt="">
             <span style="margin: 0 8px;">Agregar</span>
@@ -15,14 +15,10 @@
     </template>
     <template slot="content">
       <div class="sig-grid-select">
-        <div class="sig-grid-item hover">
-          <img src="http://yhairstylist.com/wp-content/themes/ushop/images/hero-image.jpg" alt="" style="object-fit: cover">
-        </div>
-        <div class="sig-grid-item hover">
-          <img src="http://yhairstylist.com/wp-content/uploads/2019/03/CUPONERAS-1.bmp" alt="" style="object-fit: cover">
+        <div v-for="media in mediaList" :key="media.url" class="sig-grid-item hover">
+          <img :src="media.url" alt="" style="object-fit: cover">
         </div>
         <input type="file" ref="file" style="display: none" @change="handleFileChange">
-        <button @click="$refs.file.click()">open file dialog</button>
       </div>
     </template>
   </template-sub-page>
@@ -60,21 +56,30 @@ $grid-size: 240px;
 </style>
 
 <script>
+import { UploadFile } from '../../utils/storage';
+
 export default {
   data() {
     return {
       mediaToUpload: '',
       mediaList: [
         {
-          url: ''
-        }
-      ]
+          url: 'http://yhairstylist.com/wp-content/themes/ushop/images/hero-image.jpg',
+        },
+      ],
     };
   },
   methods: {
-    handleFileChange(e) {
-      console.info(e);
-    }
-  }
-}
+    async handleFileChange(e) {
+      const notify = this.$notify;
+      const uuid = this.$uuid;
+
+      notify.info({
+        title: 'Subida en proceso',
+        message: 'Estamos subiendo el archivo y serás notificado en cuanto termine la carga',
+      });
+      UploadFile(e.target.files[0], 'developer/cloud/media/', notify, this.mediaList, uuid);
+    },
+  },
+};
 </script>
