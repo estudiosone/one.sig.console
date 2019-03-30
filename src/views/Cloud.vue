@@ -25,9 +25,6 @@
 
 <script>
 export default {
-  created() {
-    console.log(this.$route.path);
-  },
   computed: {
     route() {
       return this.$route.path;
