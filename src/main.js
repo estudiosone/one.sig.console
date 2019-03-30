@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import Element from 'element-ui';
-import UUID from 'vue-uuid';
 import firebase from 'firebase';
 import App from './App.vue';
 import router from './router';
@@ -11,7 +10,6 @@ import TemplatePage from './components/TemplatePage.vue';
 import TemplateSubPage from './components/TemplateSubPage.vue';
 
 Vue.use(Element);
-Vue.use(UUID);
 Vue.config.productionTip = false;
 Vue.component('template-page', TemplatePage);
 Vue.component('template-sub-page', TemplateSubPage);
