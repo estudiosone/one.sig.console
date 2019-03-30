@@ -15,8 +15,8 @@
     </template>
     <template slot="content">
       <div class="sig-grid-select">
-        <div v-for="media in mediaList" :key="media.url" class="sig-grid-item hover">
-          <img :src="media.url" alt="" style="object-fit: cover">
+        <div v-for="media in this.$store.getters['cloud/media/mediaList']" :key="media.id" class="sig-grid-item hover">
+          <img :src="media.url" alt="">
         </div>
         <input type="file" ref="file" style="display: none" @change="handleFileChange">
       </div>
@@ -46,17 +46,19 @@ $grid-size: 240px;
     img {
       width: $grid-size;
       height: $grid-size;
+      object-fit: contain;
     }
   }
 
   .sig-grid-item.hover:hover {
     box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+    transform: scale(1.05);
   }
 }
 </style>
 
 <script>
-import { UploadFile } from '../../utils/storage';
+// import { UploadFile } from '../../utils/storage';
 
 export default {
   data() {
@@ -71,15 +73,12 @@ export default {
   },
   methods: {
     async handleFileChange(e) {
-      const notify = this.$notify;
-      const uuid = this.$uuid;
-
-      notify.info({
-        title: 'Subida en proceso',
-        message: 'Estamos subiendo el archivo y serás notificado en cuanto termine la carga',
-      });
-      UploadFile(e.target.files[0], 'developer/cloud/media/', notify, this.mediaList, uuid);
+      await this.$store.dispatch('cloud/media/uploadMedia', e.target.files[0]);
+      this.$store.dispatch('cloud/media/getMedia');
     },
+  },
+  mounted() {
+    this.$store.dispatch('cloud/media/getMedia');
   },
 };
 </script>
