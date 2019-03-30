@@ -64,6 +64,9 @@ export default {
       console.log(key, keyPath);
     },
   },
+  beforeMount() {
+    this.$store.dispatch('business/getProfile', 'qMIwYj1HsFYqNgi7xZ64');
+  },
 };
 </script>
 
@@ -88,7 +91,7 @@ body {
 }
 
 .app-module-menu {
-  min-width: 260px;
+  min-width: 200px;
   min-height: 100%;
   overflow-y: auto;
   .app-module-menu-user {
