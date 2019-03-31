@@ -142,7 +142,7 @@ export default {
       this.$store.dispatch('cloud/media/getMedia');
     },
     deleteMedia() {
-      this.$store.dispatch('cloud/media/deleteMedia', {path: this.mediaDialogData.storage.path, file: this.mediaDialogData.storage.file, url: this.mediaDialogData.url});
+      this.$store.dispatch('cloud/media/deleteMedia', { path: this.mediaDialogData.storage.path, file: this.mediaDialogData.storage.file, url: this.mediaDialogData.url });
       // this.$store.dispatch('cloud/media/getMedia');
     },
     openMediaDialog(e) {
