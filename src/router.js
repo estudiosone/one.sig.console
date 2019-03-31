@@ -12,7 +12,7 @@ export default new Router({
       component: Home,
     },
     {
-      path: '/auth/sig-in',
+      path: '/auth/sign-in',
       component: () => import(/* webpackChunkName: "auth-signIn" */ './views/auth/SignIn.vue'),
     },
     {
