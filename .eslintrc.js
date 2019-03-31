@@ -22,4 +22,7 @@ module.exports = {
   parserOptions: {
     parser: 'babel-eslint',
   },
+  plugins: [
+    'no-unsafe-regex',
+  ],
 };
