@@ -5,6 +5,7 @@ import getters from './getters';
 import modules from './modules';
 
 export default {
+  namespaced: true,
   state,
   mutations,
   actions,
