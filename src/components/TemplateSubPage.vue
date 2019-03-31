@@ -11,6 +11,7 @@
     <div class="template-sub-content">
       <slot name="content" class="template-sub-content"/>
     </div>
+    <slot name="dialogs"/>
   </div>
 </template>
 
