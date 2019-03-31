@@ -146,7 +146,7 @@ export default {
         .then(() => {
           this.$store.commit('ui/cloud_media_mediaDialogVisible', false);
           this.$store.dispatch('cloud/media/getMedia');
-        })
+        });
     },
     openMediaDialog(e) {
       this.mediaDialogData = {

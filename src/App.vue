@@ -73,7 +73,7 @@ export default {
 <style lang="scss">
 @import url('https://fonts.googleapis.com/css?family=Ubuntu');
 @import url('https://fonts.googleapis.com/css?family=Quicksand');
-@import './assets/css/line-awesome.css';
+@import './assets/css/line-awesome.min.css';
 
 body {
   position: absolute;
