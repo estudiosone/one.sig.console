@@ -12,6 +12,10 @@ export default new Router({
       component: Home,
     },
     {
+      path: '/auth/sign-in',
+      component: () => import(/* webpackChunkName: "auth-signIn" */ './views/auth/SignIn.vue'),
+    },
+    {
       path: '/cloud',
       component: () => import(/* webpackChunkName: "page-cloud" */ './views/Cloud.vue'),
       children: [
