@@ -13,11 +13,14 @@
         v-for="item in menu"
         :key="item.to"
         :index="item.to">
-        <i class="la" :class="item.iconClass"></i>
+        <img v-if="item.iconSvg" class="la" :src="item.iconSvg" :alt="item.name">
+        <i v-else class="la" :class="item.iconClass"></i>
         <span>{{ item.name }}</span>
       </el-menu-item>
     </el-menu>
-    <router-view/>
+    <div class="router">
+      <router-view/>
+    </div>
   </div>
 </template>
 
@@ -30,17 +33,25 @@ export default {
           to: '/',
           name: 'Dashboard',
           iconClass: 'la-dashboard',
+          iconSvg: 'https://firebasestorage.googleapis.com/v0/b/one-sig-uy.appspot.com/o/console%2Fassets%2Ficons%2Fcolor%2Fsvg%2Fdashboard.svg?alt=media&token=1d3d3b2f-068f-4e20-a1bd-2378669f7688',
         },
         {
           to: '/cloud',
           name: 'Cloud',
           iconClass: 'la-cloud',
+          iconSvg: 'https://firebasestorage.googleapis.com/v0/b/one-sig-uy.appspot.com/o/console%2Fassets%2Ficons%2Fcolor%2Fsvg%2Fcloud.svg?alt=media&token=38978850-7bd7-48e1-84e3-bfcc0478734e',
         },
         {
-          to: '/config',
+          to: '/settings',
           name: 'Configuración',
           iconClass: 'la-cog',
-          submenu: [],
+          iconSvg: 'https://firebasestorage.googleapis.com/v0/b/one-sig-uy.appspot.com/o/console%2Fassets%2Ficons%2Fcolor%2Fsvg%2Fsettings.svg?alt=media&token=9ce7252e-3c50-4d8a-880a-3fc6096cb938',
+        },
+        {
+          to: '/system',
+          name: 'Sistema',
+          iconClass: 'la-desktop',
+          iconSvg: 'https://firebasestorage.googleapis.com/v0/b/one-sig-uy.appspot.com/o/console%2Fassets%2Ficons%2Fcolor%2Fsvg%2Fsystem-task.svg?alt=media&token=da22707c-58ce-4037-9047-f770ae5e64c9',
         },
       ],
     };
@@ -52,6 +63,9 @@ export default {
     handleClose(key, keyPath) {
       console.log(key, keyPath);
     },
+  },
+  beforeMount() {
+    this.$store.dispatch('business/getProfile', 'qMIwYj1HsFYqNgi7xZ64');
   },
 };
 </script>
@@ -77,7 +91,7 @@ body {
 }
 
 .app-module-menu {
-  min-width: 260px;
+  min-width: 200px;
   min-height: 100%;
   overflow-y: auto;
   .app-module-menu-user {
@@ -93,13 +107,18 @@ body {
   vertical-align: middle;
 }
 
+.illustration {
+  width: 50vw;
+  margin: 0 auto;
+}
+
 .page {
   position: relative;
   display: flex;
   flex-direction: column;
   width: 100%;
   min-height: 100%;
-
+  overflow: hidden;
   .breadcrumb {
     position: absolute;
     top: 18px;
@@ -118,22 +137,35 @@ body {
   .menu {
     position: absolute;
     width: 100%;
-    top: 120px;
+    top: 96px;
 
     .el-menu-item.is-active {
       font-weight: bold;
     }
   }
-  .illustration {
+  .sub-router {
     position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
+    top: 156px;
+    z-index: 0;
     width: 100%;
     height: 100%;
-    z-index: 1;
-    svg {
-      width: 80%;
+    // display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    .sub-page {
+      width: 100%;
+      .sub-illustration {
+        position: absolute;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        svg {
+          width: 80%;
+        }
+      }
     }
   }
 }
