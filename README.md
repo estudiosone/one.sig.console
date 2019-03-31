@@ -1,3 +1,5 @@
+[![CodeFactor](https://www.codefactor.io/repository/github/estudiosone/one.sig.console/badge)](https://www.codefactor.io/repository/github/estudiosone/one.sig.console)
+
 # one.sig.console
 
 ## Project setup
