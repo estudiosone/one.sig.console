@@ -5,12 +5,15 @@
         <img src="../../assets/illustrations/welcome.svg" alt="Iniciar sesión">
         <el-form
           v-model="signIn">
+          <h2>Iniciar sesión</h2>
           <el-form-item>
+            <el-input placeholder="Usuario" v-model="signIn.user"></el-input>
           </el-form-item>
           <el-form-item>
             <el-input placeholder="Password" v-model="signIn.pass" show-password></el-input>
           </el-form-item>
           <el-form-item>
+            <el-button type="primary" @click="onSubmit">Create</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -32,9 +35,11 @@
     border-radius: 8px;
     box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
     overflow: hidden;
-
     .content {
-
+      display: grid;
+      grid-template-columns: 480px 280px;
+      grid-template-rows: 460px;
+      align-items: center;
     }
   }
 }
