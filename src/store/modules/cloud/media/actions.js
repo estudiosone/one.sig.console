@@ -108,9 +108,6 @@ export default {
       });
   },
   async deleteMedia(context, data) {
-    console.info(data.path);
-    console.info(data.file);
-
     // Notificar
     Vue.prototype.$notify.info({
       title: 'Preparando todo...',
@@ -131,14 +128,13 @@ export default {
         });
 
         // Borrar registro de la base de datos
-        firestore().collection('cloud_media')
+        const db = firestore();
+        db.collection('cloud_media')
           .where('url', '==', data.url)
           .get()
           .then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
-              doc.set({
-                deleted: false,
-              })
+              db.collection('cloud_media').doc(doc.id).delete()
                 .then(() => {
                   Vue.prototype.$notify({
                     type: 'success',
@@ -160,6 +156,12 @@ export default {
               message: 'No fué posible eliminar el archivo',
             });
           });
+      })
+      .catch(() => {
+        Vue.prototype.$notify.error({
+          title: 'Error',
+          message: 'No fué posible eliminar el archivo',
+        });
       });
   },
 };
