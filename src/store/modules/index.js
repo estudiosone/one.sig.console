@@ -1,13 +1,9 @@
-import state from './state';
-import mutations from './mutations';
-import actions from './actions';
-import getters from './getters';
-import modules from './modules';
+import ui from './ui';
+import business from './business';
+import cloud from './cloud';
 
 export default {
-  state,
-  mutations,
-  actions,
-  getters,
-  modules,
+  ui,
+  business,
+  cloud,
 };
