@@ -1,13 +1,28 @@
 <template>
-  <div id="app">
+  <div id="app" v-bind:class="[this.$store.getters['auth/isLogged'] ? 'logged' : 'not-logged']">
      <el-menu
+      v-if="this.$store.getters['auth/isLogged']"
       default-active="/"
       class="app-module-menu"
       :router="true"
       @open="handleOpen"
       @close="handleClose">
       <div class="app-module-menu-user">
-
+        <div class="app-module-menu-user-img">
+          <img src="http://serviastro.am.ub.edu/twiki/pub/Main/UserProfileHeader/default-user-profile.jpg" alt="">
+        </div>
+        <el-dropdown>
+          <span class="el-dropdown-link">
+            Dropdown List<i class="el-icon-arrow-down el-icon--right"></i>
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item command="a">Action 1</el-dropdown-item>
+            <el-dropdown-item command="b">Action 2</el-dropdown-item>
+            <el-dropdown-item command="c">Action 3</el-dropdown-item>
+            <el-dropdown-item command="d" disabled>Action 4</el-dropdown-item>
+            <el-dropdown-item command="e" divided>Action 5</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
       </div>
       <el-menu-item
         v-for="item in menu"
@@ -25,6 +40,8 @@
 </template>
 
 <script>
+import firebase from 'firebase';
+
 export default {
   data() {
     return {
@@ -66,6 +83,13 @@ export default {
   },
   beforeMount() {
     this.$store.dispatch('business/getProfile', 'qMIwYj1HsFYqNgi7xZ64');
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        this.$store.commit('auth/set_isLogged', true);
+      } else {
+        this.$store.commit('auth/set_isLogged', false);
+      }
+    });
   },
 };
 </script>
@@ -84,9 +108,14 @@ body {
   #app {
     display: grid;
     grid-template-rows: 100%;
-    grid-template-columns: auto 1fr;
     width: 100%;
     height: 100%;
+  }
+  .logged {
+    grid-template-columns: auto 1fr;
+  }
+  .not-logged {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -95,7 +124,23 @@ body {
   min-height: 100%;
   overflow-y: auto;
   .app-module-menu-user {
-    min-height: 260px;
+    min-height: 200px;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 150px 1fr;
+    justify-content: center;
+    align-items: center;
+    .app-module-menu-user-img {
+      width: 120px;
+      height: 120px;
+      border-radius: 60px;
+      margin: auto;
+      overflow: hidden;
+      box-shadow: 0 12px 24px 0 rgba(0,0,0,.1);
+      img {
+        width: 100%;
+      }
+    }
   }
 }
 

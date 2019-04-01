@@ -7,13 +7,22 @@
           v-model="signIn">
           <h2>Iniciar sesión</h2>
           <el-form-item>
-            <el-input placeholder="Usuario" v-model="signIn.user"></el-input>
+            <el-input autofocus placeholder="E-mail" v-model="signIn.email"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-input placeholder="Password" v-model="signIn.pass" show-password></el-input>
+            <el-input placeholder="Contraseña" v-model="signIn.password" show-password></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="onSubmit">Create</el-button>
+            <el-button type="primary" @click="handle_signIn">Iniciar</el-button>
+          </el-form-item>
+          <el-form-item>
+            <el-alert
+              :closable="false"
+              v-if="this.$store.getters['auth/signInError']"
+              title="E-mail y/o contraseña incorrecto!!!"
+              type="error"
+              show-icon>
+            </el-alert>
           </el-form-item>
         </el-form>
       </div>
@@ -50,10 +59,16 @@ export default {
   data() {
     return {
       signIn: {
-        user: '',
-        pass: '',
+        email: '',
+        password: '',
       },
+      isError: false,
     };
+  },
+  methods: {
+    handle_signIn() {
+      this.$store.dispatch('auth/signIn', this.signIn);
+    },
   },
 };
 </script>
