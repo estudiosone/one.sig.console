@@ -66,8 +66,15 @@ export default {
     };
   },
   methods: {
-    handle_signIn() {
-      this.$store.dispatch('auth/signIn', this.signIn);
+    async handle_signIn() {
+      this.$store.dispatch('auth/signIn', this.signIn)
+        .then(() => {
+          this.$store.commit('auth/set_signInError', false);
+          this.$router.push({ path: this.$route.query.redirect });
+        })
+        .catch(() => {
+          this.$store.commit('auth/set_signInError', true);
+        });
     },
   },
 };

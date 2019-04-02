@@ -3,12 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "start": "npm i && npm run lint && npm run serve",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
     "browser-image-compression": "^1.0.1",
+    "convert-csv-to-json": "0.0.14",
     "element-ui": "^2.7.0",
     "firebase": "^5.9.2",
     "register-service-worker": "^1.6.2",

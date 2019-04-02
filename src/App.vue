@@ -4,26 +4,34 @@
       v-if="this.$store.getters['auth/isLogged']"
       default-active="/"
       class="app-module-menu"
-      :router="true"
-      @open="handleOpen"
-      @close="handleClose">
+      :router="true">
       <div class="app-module-menu-user">
         <div class="app-module-menu-user-img">
           <img src="http://serviastro.am.ub.edu/twiki/pub/Main/UserProfileHeader/default-user-profile.jpg" alt="">
         </div>
-        <el-dropdown>
-          <span class="el-dropdown-link">
-            Dropdown List<i class="el-icon-arrow-down el-icon--right"></i>
-          </span>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="a">Action 1</el-dropdown-item>
-            <el-dropdown-item command="b">Action 2</el-dropdown-item>
-            <el-dropdown-item command="c">Action 3</el-dropdown-item>
-            <el-dropdown-item command="d" disabled>Action 4</el-dropdown-item>
-            <el-dropdown-item command="e" divided>Action 5</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
+        <el-submenu index="1">
+          <template slot="title">
+            <div class="user">
+              <span style="
+                margin-top: 2px;
+                font-size: 18px;
+                font-weight: 800;
+                text-align: center;">
+                Hola, Diego
+              </span>
+              <span style="
+                margin-top: 6px;
+                text-align: center;
+                font-weight: lighter;
+                font-size: 12px;">
+                Administrador IT
+              </span>
+            </div>
+          </template>
+          <el-menu-item @click="handleSignOut">Cerrar sesión</el-menu-item>
+        </el-submenu>
       </div>
+      <br/>
       <el-menu-item
         v-for="item in menu"
         :key="item.to"
@@ -53,6 +61,12 @@ export default {
           iconSvg: 'https://firebasestorage.googleapis.com/v0/b/one-sig-uy.appspot.com/o/console%2Fassets%2Ficons%2Fcolor%2Fsvg%2Fdashboard.svg?alt=media&token=1d3d3b2f-068f-4e20-a1bd-2378669f7688',
         },
         {
+          to: '/marketing',
+          name: 'Marketing',
+          iconClass: 'la-cloud',
+          iconSvg: 'https://firebasestorage.googleapis.com/v0/b/one-sig-uy.appspot.com/o/console%2Fassets%2Ficons%2Fcolor%2Fsvg%2Fcommercial.svg?alt=media&token=578a6590-9f71-4820-88d8-1d8abebb7411',
+        },
+        {
           to: '/cloud',
           name: 'Cloud',
           iconClass: 'la-cloud',
@@ -74,11 +88,8 @@ export default {
     };
   },
   methods: {
-    handleOpen(key, keyPath) {
-      console.log(key, keyPath);
-    },
-    handleClose(key, keyPath) {
-      console.log(key, keyPath);
+    handleSignOut() {
+      this.$store.dispatch('auth/signOut');
     },
   },
   beforeMount() {
@@ -86,8 +97,10 @@ export default {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         this.$store.commit('auth/set_isLogged', true);
+        this.$router.push({ path: this.$route.query.redirect || '/' });
       } else {
         this.$store.commit('auth/set_isLogged', false);
+        this.$router.push({ path: '/auth/sign-in' });
       }
     });
   },
@@ -127,14 +140,21 @@ body {
     min-height: 200px;
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 150px 1fr;
+    grid-template-rows: 180px 1fr;
     justify-content: center;
     align-items: center;
+    .el-submenu__title {
+      .user {
+        display: flex;
+        flex-direction: column;
+        line-height: normal;
+      }
+    }
     .app-module-menu-user-img {
-      width: 120px;
-      height: 120px;
+      width: 96px;
+      height: 96px;
       border-radius: 60px;
-      margin: auto;
+      margin: 42px 52px;
       overflow: hidden;
       box-shadow: 0 12px 24px 0 rgba(0,0,0,.1);
       img {

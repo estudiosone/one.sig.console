@@ -9,15 +9,42 @@ const router = new Router({
   routes: [
     {
       path: '/',
-      name: 'home',
       component: Home,
       meta: {
-        requiresAuth: true,
+        auth: {
+          auth: true,
+        },
       },
     },
     {
       path: '/auth/sign-in',
       component: () => import(/* webpackChunkName: "auth-signIn" */ './views/auth/SignIn.vue'),
+    },
+    {
+      path: '/marketing',
+      component: () => import(/* webpackChunkName: "page-marketing" */ './views/Marketing.vue'),
+      children: [
+        {
+          path: '/',
+          component: () => import(/* webpackChunkName: "page-marketing-dashboard" */ './views/marketing/Dashboard.vue'),
+          meta: {
+            auth: {
+              auth: true,
+              right: 'marketing',
+            },
+          },
+        },
+        {
+          path: '/marketing/prospects',
+          component: () => import(/* webpackChunkName: "page-marketing-prospects" */ './views/marketing/Prospects.vue'),
+          meta: {
+            auth: {
+              auth: true,
+              right: 'marketing-prospects',
+            },
+          },
+        },
+      ],
     },
     {
       path: '/cloud',
@@ -26,6 +53,11 @@ const router = new Router({
         {
           path: '/',
           component: () => import(/* webpackChunkName: "page-cloud-dashboard" */ './views/cloud/Dashboard.vue'),
+          meta: {
+            auth: {
+              auth: true,
+            },
+          },
         },
         {
           path: '/cloud/media',
@@ -64,17 +96,22 @@ const router = new Router({
 
 router.beforeEach((to, from, next) => {
   const { currentUser } = firebase.auth();
-  const meta = to.matched.some(record => record.meta);
-
-  if (meta.requiresAuth) {
-    if (currentUser) {
-      next();
-    } else {
-      next({
-        path: '/auth/sign-in',
-        params: { nextUrl: to.fullPath },
-      });
+  if (to.meta.auth) {
+    if (to.meta.auth.auth) {
+      if (currentUser === null) {
+        next({
+          path: '/auth/sign-in',
+          query: { redirect: to.fullPath },
+        });
+      } else if (to.meta.auth.right) {
+        console.info('se verificara que tenga el permiso');
+        next();
+      } else {
+        next();
+      }
     }
+  } else {
+    next();
   }
 });
 
