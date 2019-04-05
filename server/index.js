@@ -8,19 +8,11 @@ admin.initializeApp({
   databaseURL: 'https://one-sig-uy.firebaseio.com',
 });
 
+const Send = require('./api/marketing/campaign/send');
+
 const App = express();
 
-App.get('/', async (req, res) => {
-  if (req.query.campaign) {
-    const campaignRef = admin.firestore().collection('marketing-campaign').doc(req.query.campaign);
-    const campaign = await campaignRef.get();
-
-    if (campaign.exists) {
-      console.log(campaign.data().campaignName);
-    }
-  }
-  res.send('Hello');
-});
+App.get('/', Send.sendCampaign);
 
 App.listen(3000, () => {
   console.log('listening on port 3000');
