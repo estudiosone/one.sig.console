@@ -1,114 +1,82 @@
 /* eslint-disable prefer-destructuring */
 const functions = require('firebase-functions');
-const Firestore = require('@google-cloud/firestore');
+const admin = require('firebase-admin');
 
-const PROJECTID = 'one-sig-uy';
+admin.initializeApp();
 
-const firestore = new Firestore({
-  projectId: PROJECTID,
-  timestampsInSnapshots: true,
-});
 const getJson = text => JSON.parse(text);
 
 exports.sns_ses_marketing = functions.https.onRequest((request, response) => {
-  let jsonMessage;
-  let messageId;
-  let destination;
-  let timestamp;
-  let delivery;
-  let open;
-  let value;
+  const notify = JSON.parse(request.body);
 
-  if (request.headers) {
-    const notify = JSON.parse(request.body);
-    if (notify.type) {
-      switch (notify.Type) {
-        case 'SubscriptionConfirmation':
-          console.log('Para confirmar la suscripción ir a: ', notify.SubscribeURL);
+  const message = getJson(notify.Message);
+
+  switch (message.eventType) {
+    case 'Send': {
+      admin
+        .firestore()
+        .collection('marketing-campaign-mail')
+        .doc(message.mail.messageId)
+        .set({
+          send: {
+            timestamp: message.mail.timestamp,
+            source: message.mail.source,
+            destination: message.mail.destination,
+          },
+        })
+        .then(() => {
           response.sendStatus(200);
-          break;
-        case 'Notification':
-          // processNotification(response, notify.Message);
-          jsonMessage = getJson(notify.Message);
-
-          if (jsonMessage.eventType) {
-            switch (jsonMessage.eventType) {
-              case 'Send':
-                // NotifySend(response, jsonMessage);
-                messageId = jsonMessage.mail.messageId;
-                destination = jsonMessage.mail.destination;
-                timestamp = jsonMessage.mail.timestamp;
-
-                value = {
-                  to: destination,
-                  send: true,
-                  sendTimestamp: timestamp,
-                };
-
-                return firestore.collection('marketing-campaign-mail').doc(messageId).set({
-                  to: destination,
-                  send: true,
-                  sendTimestamp: timestamp,
-                })
-                  .then(() => response.sendStatus(200))
-                  .catch((err) => {
-                    console.error(err);
-                    response.sendStatus(500);
-                  });
-              case 'Delivery':
-                // NotifyDelivery(response, jsonMessage);
-                messageId = jsonMessage.mail.messageId;
-                delivery = jsonMessage.delivery;
-
-                value = {
-                  delivery: true,
-                  deliveryTimestamp: delivery.timestamp,
-                };
-
-                return firestore.collection('marketing-campaign-mail').doc(messageId).set({
-                  to: destination,
-                  send: true,
-                  sendTimestamp: timestamp,
-                })
-                  .then(() => response.sendStatus(200))
-                  .catch((err) => {
-                    console.error(err);
-                    response.sendStatus(500);
-                  });
-              case 'Open':
-                // NotifyOpen(response, jsonMessage);
-                messageId = jsonMessage.mail.messageId;
-                open = jsonMessage.open;
-
-                return firestore.collection('marketing-campaign-mail').doc(messageId).set({
-                  delivery: true,
-                  deliveryTimestamp: delivery.timestamp,
-                })
-                  .then(() => response.sendStatus(200))
-                  .catch((err) => {
-                    console.error(err);
-                    response.sendStatus(500);
-                  });
-              case 'Click':
-                break;
-              case 'Bounce':
-                break;
-              case 'Complaint':
-                break;
-              case 'Reject':
-                break;
-              default:
-                console.warn('Tipo de evento no soportado', jsonMessage);
-                response.sendStatus(400);
-                break;
-            }
-          }
-          break;
-        default:
-          console.warn('Notify not supported', request.body);
-          response.sendStatus(400);
-          break;
-      }
+        })
+        .catch((error) => {
+          console.error('No se pudo actualizar el registro', error);
+          response.status(500).send(error);
+        });
+      break;
+    }
+    case 'Delivery': {
+      admin
+        .firestore()
+        .collection('marketing-campaign-mail')
+        .doc(message.mail.messageId)
+        .update({
+          delivery: {
+            timestamp: message.delivery.timestamp,
+            smtpResponse: message.delivery.smtpResponse,
+          },
+        })
+        .then(() => {
+          response.sendStatus(200);
+        })
+        .catch((error) => {
+          console.error('No se pudo actualizar el registro', error);
+          response.status(500).send(error);
+        });
+      break;
+    }
+    case 'Open': {
+      admin
+        .firestore()
+        .collection('marketing-campaign-mail')
+        .doc(message.mail.messageId)
+        .update({
+          open: {
+            timestamp: message.open.timestamp,
+            ipAddress: message.open.ipAddress,
+            userAgent: message.open.userAgent,
+          },
+        })
+        .then(() => {
+          response.sendStatus(200);
+        })
+        .catch((error) => {
+          console.error('No se pudo actualizar el registro', error);
+          response.status(500).send(error);
+        });
+      break;
+    }
+    default: {
+      console.warn('No podemos procesar correctamente el contenido de la notificación', message);
+      response.sendStatus(200);
     }
   }
 });
