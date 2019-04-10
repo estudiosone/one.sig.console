@@ -5,28 +5,21 @@ const admin = require('firebase-admin');
 admin.initializeApp();
 
 const getJson = text => JSON.parse(text);
+const getEmailId = tags => tags['marketing-campaign-email'];
 
 exports.sns_ses_marketing = functions.https.onRequest((request, response) => {
   const notify = JSON.parse(request.body);
-
   const message = getJson(notify.Message);
-
   switch (message.eventType) {
     case 'Send': {
-      console.log(message.mail.tags['marketing-campaign']);
-      let campaignRef;
-      if (message.mail.tags['marketing-campaign']) {
-        const marketingCampaign = message.mail.tags['marketing-campaign'];
-        campaignRef = admin.firestore().collection('marketing-campaign').doc(marketingCampaign[0]);
-      }
       admin
         .firestore()
-        .collection('marketing-campaign-mail')
-        .doc(message.mail.messageId)
-        .set({
-          campaign: campaignRef,
-          timestamp: admin.firestore.FieldValue.serverTimestamp(),
-          send: {
+        .collection('marketing-campaign-email')
+        .doc(getEmailId(message.mail.tags)[0])
+        .update({
+          'aws-ses-messageId': message.mail.messageId,
+          send: true,
+          sendData: {
             timestamp: admin.firestore.FieldValue.serverTimestamp(),
             source: message.mail.source,
             destination: message.mail.destination,
@@ -44,10 +37,11 @@ exports.sns_ses_marketing = functions.https.onRequest((request, response) => {
     case 'Delivery': {
       admin
         .firestore()
-        .collection('marketing-campaign-mail')
-        .doc(message.mail.messageId)
+        .collection('marketing-campaign-email')
+        .doc(getEmailId(message.mail.tags)[0])
         .update({
-          delivery: {
+          delivery: true,
+          deliveryData: {
             timestamp: admin.firestore.FieldValue.serverTimestamp(),
             smtpResponse: message.delivery.smtpResponse,
           },
@@ -64,10 +58,11 @@ exports.sns_ses_marketing = functions.https.onRequest((request, response) => {
     case 'Open': {
       admin
         .firestore()
-        .collection('marketing-campaign-mail')
-        .doc(message.mail.messageId)
+        .collection('marketing-campaign-email')
+        .doc(getEmailId(message.mail.tags)[0])
         .update({
-          open: {
+          open: true,
+          openData: {
             timestamp: admin.firestore.FieldValue.serverTimestamp(),
             ipAddress: message.open.ipAddress,
             userAgent: message.open.userAgent,
