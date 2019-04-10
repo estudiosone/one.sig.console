@@ -21,4 +21,4 @@ yarn-error.log*
 *.sw*
 package-lock.json
 functions/one-sig-uy-firebase-adminsdk-yot8x-9444e85f45.json
-server/key/one-sig-uy-firebase-adminsdk-yot8x-9444e85f45.json
+credentials.json
