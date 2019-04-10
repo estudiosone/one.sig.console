@@ -78,8 +78,12 @@ const router = new Router({
           component: () => import(/* webpackChunkName: "page-settings-dashboard" */ './views/settings/Dashboard.vue'),
         },
         {
-          path: '/settings/basic-data/people/people',
-          component: () => import(/* webpackChunkName: "page-settings-dashboard" */ './views/settings/basic-data/people/People.vue'),
+          path: '/settings/basic-data/people/people-list',
+          component: () => import(/* webpackChunkName: "page-settings-basic-data-people-people" */ './views/settings/basic-data/people/People.vue'),
+        },
+        {
+          path: '/settings/basic-data/people/people-detail',
+          component: () => import(/* webpackChunkName: "page-settings-basic-data-people-people-detail" */ './views/settings/basic-data/people/PeopleDetail.vue'),
         },
         {
           path: '/settings/*',
