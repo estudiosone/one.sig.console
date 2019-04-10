@@ -35,6 +35,26 @@ const router = new Router({
           },
         },
         {
+          path: '/marketing/campaign-list',
+          component: () => import(/* webpackChunkName: "page-marketing-campaign-list" */ './views/marketing/CampaignList.vue'),
+          meta: {
+            auth: {
+              auth: true,
+              right: 'marketing-campaign-list',
+            },
+          },
+        },
+        {
+          path: '/marketing/campaign-detail',
+          component: () => import(/* webpackChunkName: "page-marketing-campaign-detail" */ './views/marketing/CampaignDetail.vue'),
+          meta: {
+            auth: {
+              auth: true,
+              right: 'marketing-campaign-list',
+            },
+          },
+        },
+        {
           path: '/marketing/prospects',
           component: () => import(/* webpackChunkName: "page-marketing-prospects" */ './views/marketing/Prospects.vue'),
           meta: {
