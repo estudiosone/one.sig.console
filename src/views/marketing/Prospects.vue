@@ -64,7 +64,7 @@ $grid-size: 240px;
 
 <script>
 // import { UploadFile } from '../../utils/storage';
-import csvToJson from 'convert-csv-to-json';
+// import csvToJson from 'convert-csv-to-json';
 
 export default {
   methods: {
@@ -72,7 +72,7 @@ export default {
       console.info('click');
       const file = e.target.files[0];
       console.info(file);
-      const json = csvToJson.getJsonFromCsv(file);
+      // const json = csvToJson.getJsonFromCsv(file);
       // console.info(json);
     },
   },
