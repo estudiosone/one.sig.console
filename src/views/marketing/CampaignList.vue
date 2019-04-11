@@ -76,7 +76,7 @@ export default {
     this.$store.dispatch('marketing/campaign/init');
   },
   destroyed() {
-    this.$store.commit('marketing/campaign/set_list', [])
+    this.$store.commit('marketing/campaign/set_list', []);
   },
   methods: {
     handleOpenRecord(id) {

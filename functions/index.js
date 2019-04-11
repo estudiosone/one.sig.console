@@ -77,6 +77,45 @@ exports.sns_ses_marketing = functions.https.onRequest((request, response) => {
         });
       break;
     }
+    case 'Bounce': {
+      admin
+        .firestore()
+        .collection('marketing-campaign-email')
+        .doc(getEmailId(message.mail.tags)[0])
+        .update({
+          bounce: true,
+          bounceData: {
+            timestamp: admin.firestore.FieldValue.serverTimestamp(),
+            bounceType: message.bounce.bounceType,
+            bounceSubType: message.bounce.bounceSubType,
+          },
+        })
+        .then(() => {
+          response.sendStatus(200);
+        })
+        .catch((error) => {
+          console.error('No se pudo actualizar el registro', error);
+          response.status(500).send(error);
+        });
+      break;
+    }
+    case 'Complaint': {
+      admin
+        .firestore()
+        .collection('marketing-campaign-email')
+        .doc(getEmailId(message.mail.tags)[0])
+        .update({
+          complaint: true,
+        })
+        .then(() => {
+          response.sendStatus(200);
+        })
+        .catch((error) => {
+          console.error('No se pudo actualizar el registro', error);
+          response.status(500).send(error);
+        });
+      break;
+    }
     default: {
       console.warn('No podemos procesar correctamente el contenido de la notificación', message);
       response.sendStatus(200);

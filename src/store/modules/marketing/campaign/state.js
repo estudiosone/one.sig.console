@@ -1,6 +1,10 @@
 export default {
   list: [],
   selectedList: [],
-  selected: [],
+  selected: {
+    id: '',
+    name: '',
+    timestamp: '',
+  },
   loading: false,
 };
