@@ -32,8 +32,9 @@
             </el-row>
           </el-tab-pane>
           <el-tab-pane label="Suscriptores">Config</el-tab-pane>
-          <el-tab-pane label="Plantilla">
-            <vue-editor v-model="content"/>
+          <el-tab-pane name="template" label="Plantilla">
+            <quill-editor v-model="form.template" @change="onEditorChange($event)"/>
+            <!-- <vue-editor v-model="content"/> -->
           </el-tab-pane>
           <el-tab-pane label="Autorización">Task</el-tab-pane>
         </el-tabs>
@@ -43,25 +44,37 @@
 </template>
 
 <script>
-import { VueEditor } from 'vue2-editor';
-
 export default {
-  components: {
-    VueEditor,
-  },
-  data() {
-    return {
-      content: '',
-    };
-  },
   computed: {
+    contentC: {
+      get() {
+        return this.$store.state.marketing.campaign.campaign.template;
+      },
+      set(value) {
+        this.content = value;
+      },
+    },
     readOnly() {
       return this.$route.query.action === 'view';
     },
     form: {
       get() {
-        return this.$store.getters['marketing/campaign/selected'];
+        return this.$store.getters['marketing/campaign/campaign'];
       },
+      set(value) {
+        this.$store.commit('marketing/campaign/set_campaign', value);
+      },
+    },
+  },
+  mounted() {
+    this.$store.dispatch('marketing/campaign/initCampaignDetail', this.$route.query.id);
+  },
+  destroyed() {
+    this.$store.commit('marketing/campaign/set_campaign');
+  },
+  methods: {
+    onEditorChange({ html }) {
+      this.$store.commit('marketing/campaign/set_campaign_template', html);
     },
   },
 };

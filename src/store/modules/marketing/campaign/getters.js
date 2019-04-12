@@ -20,6 +20,7 @@ export default {
     return result;
   },
   selected: state => state.selected,
+  campaign: state => state.campaign,
   selectedList: state => state.selectedList,
   loading: state => state.loading,
 };
