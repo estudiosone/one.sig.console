@@ -122,3 +122,8 @@ exports.sns_ses_marketing = functions.https.onRequest((request, response) => {
     }
   }
 });
+
+exports.mercado_pago_webhooks = functions.https.onRequest((request, response) => {
+  console.info(request);
+  response.sendStatus(200);
+});

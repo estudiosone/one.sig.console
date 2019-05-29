@@ -1,4 +1,5 @@
 const admin = require('firebase-admin');
+const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 
 const firebaseCredentials = require('./firebase-credentials.json');
 
@@ -8,6 +9,7 @@ admin.initializeApp({
 });
 const db = admin.firestore();
 
+const campaign = 'IBh7MzH2FF9TjgPrjlcN';
 // db.collection('marketing-campaign-email').where('open', '==', true)
 //   .onSnapshot((querySnapshot) => {
 //     const emails = [];
@@ -42,7 +44,7 @@ const db = admin.firestore();
 //   });
 
 db.collection('marketing-campaign-email')
-  .where('campaign', '==', db.collection('marketing-campaign').doc('QBeUdLCrVUZ9wAr62GC7'))
+  .where('campaign', '==', db.collection('marketing-campaign').doc(campaign))
   .get()
   .then((result) => {
     const emails = [];
@@ -78,4 +80,56 @@ db.collection('marketing-campaign-email')
     console.log(`           | Transient - ContentRejected     : ${rebotadosTransientContentRejected.length}`);
     console.log(`           | Transient - AttachmentRejected  : ${rebotadosTransientAttachmentRejected.length}`);
     console.log(`Denunciados: ${emails.filter(x => x.complaint === true).length}`);
+
+    const csvWriter = createCsvWriter({
+      path: 'out.csv',
+      header: [
+        { id: 'email', title: 'Email' },
+      ],
+    });
+    const csvWriterBounce = createCsvWriter({
+      path: `bounce-${campaign}.csv`,
+      header: [
+        { id: 'email', title: 'Email' },
+      ],
+    });
+    const data = [];
+    const preData = [];
+    const bounce = [];
+
+    entregados.forEach(mail => preData.push(mail.sendData.destination[0]));
+    rebotadosUndeterminedUndetermined.forEach(mail => bounce.push({ email: mail.sendData.destination[0] }));
+    rebotadosPermanentGeneral.forEach(mail => bounce.push({ email: mail.sendData.destination[0] }));
+    rebotadosPermanentNoEmail.forEach(mail => bounce.push({ email: mail.sendData.destination[0] }));
+    rebotadosPermanentSuppressed.forEach(mail => bounce.push({ email: mail.sendData.destination[0] }));
+
+    rebotadosUndeterminedUndetermined.forEach((mail) => {
+      const email = mail.sendData.destination[0];
+      if (preData.includes(email)) {
+        const index = preData.indexOf(email);
+        preData.splice(index, 1);
+      }
+    });
+    rebotadosPermanentGeneral.forEach((mail) => {
+      const email = mail.sendData.destination[0];
+      if (preData.includes(email)) {
+        const index = preData.indexOf(email);
+        preData.splice(index, 1);
+      }
+    });
+    rebotadosPermanentSuppressed.forEach((mail) => {
+      const email = mail.sendData.destination[0];
+      if (preData.includes(email)) {
+        const index = preData.indexOf(email);
+        preData.splice(index, 1);
+      }
+    });
+    preData.forEach(mail => data.push({ email: mail }));
+
+    csvWriter
+      .writeRecords(data)
+      .then(() => console.log('The CSV file was written successfully'));
+    csvWriterBounce
+      .writeRecords(bounce)
+      .then(() => console.log('The CSV file was written successfully'));
   });

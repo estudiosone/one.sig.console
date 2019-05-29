@@ -2,7 +2,9 @@
 /* eslint-disable security/detect-object-injection */
 const admin = require('firebase-admin');
 const AWS = require('aws-sdk');
-const dataRAW = require('./data.json');
+const csv = require('csv-parser');
+const fs = require('fs');
+// const dataRAW = require('./data.json');
 
 
 const firebaseCredentials = require('./firebase-credentials.json');
@@ -20,9 +22,29 @@ const uploadTemplate = async () => {
   // Create createTemplate params
   const params = {
     Template: {
-      TemplateName: 'QBeUdLCrVUZ9wAr62GC7',
-      HtmlPart: '<div><h2>Tus próximas vacaciones están a un clic!!!</h2><br><p>¡En turismo tenemos esta promo para ti!</p><br><img href="http://www.eldescubrimiento.com" style="max - width:100 %; display: inline - block" src="http://www.livebeep.com/visitor/medias/file/image/large/163/p/Promo-Turismo-feed-jpg-210226.jpg"></div>',
-      SubjectPart: 'Últimos lugares para turismo!',
+      TemplateName: 'IBh7MzH2FF9TjgPrjlcN',
+      HtmlPart: `
+      <div>
+      <a target="_blank" 
+        href="http://eldescubrimiento.com?utm_campaign=D%C3%ADa+de+la+madre+2019&utm_medium=email&utm_source=newsletter"
+        style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-size:14px;text-decoration:underline;color:#2CB543;">
+        <img class="adapt-img"
+          src="http://www.eldescubrimiento.com/wp-content/uploads/2017/08/logo-el_descubrimiento.jpg"
+          alt
+          style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;margin:0 auto;"
+          height="120">
+      </a>
+      <a target="_blank"
+        href="http://eldescubrimiento.com/promociones?utm_campaign=D%C3%ADa+de+la+madre+2019&utm_medium=email&utm_source=newsletter"
+        style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-size:14px;text-decoration:underline;color:#2CB543;">
+        <img class="adapt-img"
+          src="http://www.eldescubrimiento.com/wp-content/uploads/2019/04/2019-04-DIA-DE-LA-MADRE-FEED-min.png"
+          alt
+          style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;"
+          width="560">
+      </a>
+    </div>      `,
+      SubjectPart: 'Promo mamá',
     },
   };
 
@@ -45,65 +67,78 @@ const asyncForEach = async (array, callback) => {
   }
 };
 
-const deleteTemplate = async () => {
-  await SES.deleteTemplate({ TemplateName: 'QBeUdLCrVUZ9wAr62GC7' });
-  console.log('Se eliminó la plantilla correctamente');
+const deleteTemplate = () => {
+  const params = {
+    TemplateName: 'IBh7MzH2FF9TjgPrjlcN',
+  };
+  SES.deleteTemplate(params, (err, data) => {
+    if (err) console.log(err, err.stack); // an error occurred
+    else console.log(data); // successful response
+  });
 };
 
 const sendTemplate = async () => {
-  const destinations = dataRAW.Data;
-  const templateName = 'QBeUdLCrVUZ9wAr62GC7';
-  const source = 'El Descubrimiento RESORT CLUB <noreplay@eldescubrimiento.com>';
-  const replyToAddresses = ['El Descubrimiento RESORT CLUB <info@eldescubrimiento.com>'];
-  let x = 0;
-  const y = destinations.length;
-  await asyncForEach(destinations, async (destination) => {
-    await waitFor(100);
-    x++;
-    console.log(`Procesando email ${x} de ${y}`);
-    console.log('Se esta enviando a: ', destination);
+  const destinations = [];
+  fs.createReadStream('out.csv')
+    .pipe(csv())
+    .on('data', (row) => {
+      destinations.push(row.Email);
+    })
+    .on('end', async () => {
+      const templateName = 'IBh7MzH2FF9TjgPrjlcN';
+      const source = 'El Descubrimiento RESORT CLUB <noreply@eldescubrimiento.com>';
+      const replyToAddresses = ['El Descubrimiento RESORT CLUB <info@eldescubrimiento.com>'];
+      let x = 0;
+      const y = destinations.length;
+      await asyncForEach(destinations, async (destination) => {
+        await waitFor(100);
+        x++;
+        console.log(`Procesando email ${x} de ${y}`);
+        console.log('Se esta enviando a: ', destination);
 
-    db.collection('marketing-campaign-email').add({
-      send: false,
-      delivery: false,
-      open: false,
-      campaign: db.collection('marketing-campaign').doc(templateName),
-      to: destination,
-    }).then((result) => {
-      console.log('Id: ', result.id);
-      const params = {
-        Destination: { /* required */
-          ToAddresses: [
-            destination,
-          ],
-        },
-        Source: source, /* required */
-        Template: templateName, /* required */
-        // eslint-disable-next-line no-useless-escape
-        TemplateData: '{ \"name\":\"Cliente\" }', /* required */
-        ReplyToAddresses: replyToAddresses,
-        Tags: [
-          {
-            Name: 'marketing-campaign-email', /* required */
-            Value: result.id, /* required */
-          },
-          /* more items */
-        ],
-        ConfigurationSetName: 'Marketing',
-      };
-      SES.sendTemplatedEmail(params)
-        .promise()
-        .then((data) => {
-          console.log(data.MessageId);
-        })
-        .catch((err) => {
-          console.error(err, err.stack, destination);
+        db.collection('marketing-campaign-email').add({
+          send: false,
+          delivery: false,
+          open: false,
+          campaign: db.collection('marketing-campaign').doc(templateName),
+          to: destination,
+        }).then((result) => {
+          console.log('Id: ', result.id);
+          const params = {
+            Destination: { /* required */
+              ToAddresses: [
+                destination,
+              ],
+            },
+            Source: source, /* required */
+            Template: templateName, /* required */
+            // eslint-disable-next-line no-useless-escape
+            TemplateData: '{ \"name\":\"Cliente\" }', /* required */
+            ReplyToAddresses: replyToAddresses,
+            Tags: [
+              {
+                Name: 'marketing-campaign-email', /* required */
+                Value: result.id, /* required */
+              },
+              /* more items */
+            ],
+            ConfigurationSetName: 'Marketing',
+          };
+          SES.sendTemplatedEmail(params)
+            .promise()
+            .then((data) => {
+              console.log(data.MessageId);
+            })
+            .catch((err) => {
+              console.error(err, err.stack, destination);
+            });
+
+          console.log('Enviado');
         });
-
-      console.log('Enviado');
+      });
     });
-  });
 };
+
 
 // uploadTemplate();
 sendTemplate();
