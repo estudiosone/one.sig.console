@@ -1,6 +1,7 @@
 /* eslint-disable prefer-destructuring */
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const axios = require('axios');
 
 admin.initializeApp();
 
@@ -124,6 +125,27 @@ exports.sns_ses_marketing = functions.https.onRequest((request, response) => {
 });
 
 exports.mercado_pago_webhooks = functions.https.onRequest((request, response) => {
-  console.info(request);
-  response.sendStatus(200);
+  if (request.body.action) {
+    console.log(request.body.action);
+    if (request.body.action === 'payment.created') {
+      const id = request.body.data.id;
+      console.log(id);
+
+      return axios
+        .get(
+          `https://api.mercadopago.com/v1/payments/${id}?access_token=TEST-2231678987876568-102116-78ac94e6f5932170a82610b10f317156-214493848`,
+        )
+        .then((result) => {
+          console.log(result);
+          response.sendStatus(200);
+        })
+        .catch((error) => {
+          console.error(error);
+          response.sendStatus(500);
+        });
+    }
+  } else {
+    console.log(request.body);
+    response.sendStatus(200);
+  }
 });
