@@ -7,6 +7,7 @@ admin.initializeApp();
 
 const getJson = text => JSON.parse(text);
 const getEmailId = tags => tags['marketing-campaign-email'];
+const getCampaignId = tags => tags['marketing-campaign'];
 
 exports.sns_ses_marketing = functions.https.onRequest((request, response) => {
   const notify = JSON.parse(request.body);
@@ -25,6 +26,15 @@ exports.sns_ses_marketing = functions.https.onRequest((request, response) => {
             source: message.mail.source,
             destination: message.mail.destination,
           },
+        })
+        .then(() => {
+          admin
+            .firestore()
+            .collection('marketing-campaign')
+            .doc(getCampaignId(message.mail.tags)[0])
+            .update({
+              send: admin.firestore.FieldValue.increment(1),
+            });
         })
         .then(() => {
           response.sendStatus(200);
@@ -46,6 +56,15 @@ exports.sns_ses_marketing = functions.https.onRequest((request, response) => {
             timestamp: admin.firestore.FieldValue.serverTimestamp(),
             smtpResponse: message.delivery.smtpResponse,
           },
+        })
+        .then(() => {
+          admin
+            .firestore()
+            .collection('marketing-campaign')
+            .doc(getCampaignId(message.mail.tags)[0])
+            .update({
+              delivery: admin.firestore.FieldValue.increment(1),
+            });
         })
         .then(() => {
           response.sendStatus(200);
@@ -70,6 +89,15 @@ exports.sns_ses_marketing = functions.https.onRequest((request, response) => {
           },
         })
         .then(() => {
+          admin
+            .firestore()
+            .collection('marketing-campaign')
+            .doc(getCampaignId(message.mail.tags)[0])
+            .update({
+              open: admin.firestore.FieldValue.increment(1),
+            });
+        })
+        .then(() => {
           response.sendStatus(200);
         })
         .catch((error) => {
@@ -92,6 +120,15 @@ exports.sns_ses_marketing = functions.https.onRequest((request, response) => {
           },
         })
         .then(() => {
+          admin
+            .firestore()
+            .collection('marketing-campaign')
+            .doc(getCampaignId(message.mail.tags)[0])
+            .update({
+              bounce: admin.firestore.FieldValue.increment(1),
+            });
+        })
+        .then(() => {
           response.sendStatus(200);
         })
         .catch((error) => {
@@ -109,6 +146,15 @@ exports.sns_ses_marketing = functions.https.onRequest((request, response) => {
           complaint: true,
         })
         .then(() => {
+          admin
+            .firestore()
+            .collection('marketing-campaign')
+            .doc(getCampaignId(message.mail.tags)[0])
+            .update({
+              complaint: admin.firestore.FieldValue.increment(1),
+            });
+        })
+        .then(() => {
           response.sendStatus(200);
         })
         .catch((error) => {
@@ -118,7 +164,8 @@ exports.sns_ses_marketing = functions.https.onRequest((request, response) => {
       break;
     }
     default: {
-      console.warn('No podemos procesar correctamente el contenido de la notificación', message);
+      console.warn('No podemos procesar correctamente el contenido de la notificación',
+        message);
       response.sendStatus(200);
     }
   }
@@ -129,12 +176,12 @@ exports.mercado_pago_webhooks = functions.https.onRequest((request, response) =>
     console.log(request.body.action);
     if (request.body.action === 'payment.created') {
       const id = request.body.data.id;
+      const url = `https://api.mercadopago.com/v1/payments/
+      ${id}?access_token=TEST-2231678987876568-102116-78ac94e6f5932170a82610b10f317156-214493848`;
       console.log(id);
 
       return axios
-        .get(
-          `https://api.mercadopago.com/v1/payments/${id}?access_token=TEST-2231678987876568-102116-78ac94e6f5932170a82610b10f317156-214493848`,
-        )
+        .get(url)
         .then((result) => {
           console.log(result);
           response.sendStatus(200);
@@ -144,8 +191,9 @@ exports.mercado_pago_webhooks = functions.https.onRequest((request, response) =>
           response.sendStatus(500);
         });
     }
-  } else {
-    console.log(request.body);
     response.sendStatus(200);
   }
+  console.log(request.body);
+  response.sendStatus(200);
+  return response.sendStatus(200);
 });

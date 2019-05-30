@@ -1,10 +1,11 @@
 /* eslint-disable no-plusplus */
 /* eslint-disable security/detect-object-injection */
 const admin = require('firebase-admin');
-const AWS = require('aws-sdk');
 const csv = require('csv-parser');
 const fs = require('fs');
-// const dataRAW = require('./data.json');
+const createTemplate = require('./mailOperations/createTemplate');
+const send = require('./mailOperations/send');
+const deleteTemplate = require('./mailOperations/deleteTemplate');
 
 
 const firebaseCredentials = require('./firebase-credentials.json');
@@ -13,69 +14,6 @@ admin.initializeApp({
   credential: admin.credential.cert(firebaseCredentials),
   databaseURL: 'https://one-sig-uy.firebaseio.com',
 });
-const db = admin.firestore();
-
-AWS.config.loadFromPath('./config.json');
-const SES = new AWS.SES();
-
-const uploadTemplate = async () => {
-  // Create createTemplate params
-  const params = {
-    Template: {
-      TemplateName: 'IBh7MzH2FF9TjgPrjlcN',
-      HtmlPart: `
-      <div>
-      <a target="_blank" 
-        href="http://eldescubrimiento.com?utm_campaign=D%C3%ADa+de+la+madre+2019&utm_medium=email&utm_source=newsletter"
-        style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-size:14px;text-decoration:underline;color:#2CB543;">
-        <img class="adapt-img"
-          src="http://www.eldescubrimiento.com/wp-content/uploads/2017/08/logo-el_descubrimiento.jpg"
-          alt
-          style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;margin:0 auto;"
-          height="120">
-      </a>
-      <a target="_blank"
-        href="http://eldescubrimiento.com/promociones?utm_campaign=D%C3%ADa+de+la+madre+2019&utm_medium=email&utm_source=newsletter"
-        style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-size:14px;text-decoration:underline;color:#2CB543;">
-        <img class="adapt-img"
-          src="http://www.eldescubrimiento.com/wp-content/uploads/2019/04/2019-04-DIA-DE-LA-MADRE-FEED-min.png"
-          alt
-          style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;"
-          width="560">
-      </a>
-    </div>      `,
-      SubjectPart: 'Promo mamá',
-    },
-  };
-
-  // Create the promise and SES service object
-  SES.createTemplate(params)
-    .promise()
-    .then((data) => {
-      console.log('Se creó la plantilla satisfactoriamente', data);
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-};
-
-const waitFor = ms => new Promise(r => setTimeout(r, ms));
-const asyncForEach = async (array, callback) => {
-  for (let index = 0; index < array.length; index++) {
-    // eslint-disable-next-line no-await-in-loop
-    await callback(array[index], index, array);
-  }
-};
-
-const deleteTemplate = () => {
-  const params = {
-    TemplateName: 'IBh7MzH2FF9TjgPrjlcN',
-  };
-  SES.deleteTemplate(params, (err, data) => {
-    if (err) console.log(err, err.stack); // an error occurred
-    else console.log(data); // successful response
-  });
-};
 
 const sendTemplate = async () => {
   const destinations = [];
@@ -85,160 +23,38 @@ const sendTemplate = async () => {
       destinations.push(row.Email);
     })
     .on('end', async () => {
-      const templateName = 'IBh7MzH2FF9TjgPrjlcN';
+      const templateName = 'v8vyVkmsyY4EGtc8WXvf';
       const source = 'El Descubrimiento RESORT CLUB <noreply@eldescubrimiento.com>';
-      const replyToAddresses = ['El Descubrimiento RESORT CLUB <info@eldescubrimiento.com>'];
-      let x = 0;
-      const y = destinations.length;
-      await asyncForEach(destinations, async (destination) => {
-        await waitFor(100);
-        x++;
-        console.log(`Procesando email ${x} de ${y}`);
-        console.log('Se esta enviando a: ', destination);
-
-        db.collection('marketing-campaign-email').add({
-          send: false,
-          delivery: false,
-          open: false,
-          campaign: db.collection('marketing-campaign').doc(templateName),
-          to: destination,
-        }).then((result) => {
-          console.log('Id: ', result.id);
-          const params = {
-            Destination: { /* required */
-              ToAddresses: [
-                destination,
-              ],
-            },
-            Source: source, /* required */
-            Template: templateName, /* required */
-            // eslint-disable-next-line no-useless-escape
-            TemplateData: '{ \"name\":\"Cliente\" }', /* required */
-            ReplyToAddresses: replyToAddresses,
-            Tags: [
-              {
-                Name: 'marketing-campaign-email', /* required */
-                Value: result.id, /* required */
-              },
-              /* more items */
-            ],
-            ConfigurationSetName: 'Marketing',
-          };
-          SES.sendTemplatedEmail(params)
-            .promise()
-            .then((data) => {
-              console.log(data.MessageId);
-            })
-            .catch((err) => {
-              console.error(err, err.stack, destination);
-            });
-
-          console.log('Enviado');
-        });
+      const replyToAddresses = [
+        'El Descubrimiento RESORT CLUB <info@eldescubrimiento.com>',
+      ];
+      await createTemplate({
+        Template: {
+          TemplateName: templateName,
+          HtmlPart: `
+            <div>
+              <a target="_blank"
+                href="http://eldescubrimiento.com/promociones?utm_campaign=Vacaciones+de+invierno+2019&utm_medium=email&utm_source=newsletter"
+                style="-webkit-text-size-adjust:none;-ms-text-size-adjust:none;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;font-size:14px;text-decoration:underline;color:#2CB543;">
+                <img class="adapt-img"
+                  src="http://www.eldescubrimiento.com/wp-content/uploads/2019/05/2019-05-VACACIONES-DE-INV_FULL-min.png" alt
+                  style="display:block;border:0;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic; margin: 0 auto; max-width: 620px;"
+                  width="100%">
+              </a>
+            </div>`,
+          SubjectPart: 'Vacaciones de invierno',
+        },
+      });
+      await send({
+        destinations,
+        templateName,
+        source,
+        replyToAddresses,
+      });
+      await deleteTemplate({
+        TemplateName: templateName,
       });
     });
 };
 
-
-// uploadTemplate();
 sendTemplate();
-// deleteTemplate();
-
-// const campaigns = [];
-
-// db.collection('marketing-campaign')
-//   .where('isActive', '==', true)
-//   .where('isProcessed', '==', false)
-//   .onSnapshot((querySnapshot) => {
-//     querySnapshot.forEach((campaign) => {
-//       if (!campaigns.includes(campaign.path)) {
-//         // Agregar la campaña a la lista
-//         campaigns.push(campaign.path);
-
-//         // Obtener las propiedades y datos de la campaña
-//         const campaignData = campaign.data();
-//         const campaignRef = campaign.path;
-//         const {
-//           businessRef,
-//           templateString,
-//           subject,
-//           sendFrom,
-//           replyTo,
-//         } = campaignData;
-//         const prospects = [];
-//         campaignData.prospects.forEach(async (prospectRef) => {
-//           const prospect = await db.doc(prospectRef).get();
-//           const people = await db.doc(prospect.data().people).get();
-//           const contacts = [];
-//           people.data().contacts.forEach(async (contactRef) => {
-//             const contact = await db.doc(contactRef)
-//               .get()
-//               .data();
-//             if (contact.type === 'mail') {
-//               contacts.push(contact.value);
-//             }
-//           });
-//           prospects.push({
-//             id: prospect.id,
-//             name: people.data().name,
-//             surname: people.data().surname,
-//             contacts,
-//           });
-//         });
-
-//         // Crear y subir el template a AWS SES
-//         const awsTemplateParams = {
-//           Template: {
-//             TemplateName: campaign.id,
-//             HtmlPart: templateString,
-//             SubjectPart: subject,
-//           },
-//         };
-
-//         SES.createTemplate(awsTemplateParams)
-//           .then(() => console.log(`Se genero satisfactoriamente la platilla en AWS SES con el id: ${campaign.id}`));
-
-//         // Generar los registros de email de la campaña y enviar los mismos por AWS SES
-//         prospects.forEach(async (prospect) => {
-//           const docRef = await db.collection('marketing-campaign-email').add({
-//             timestamp: admin.firestore.FieldValue.serverTimestamp(),
-//             send: false,
-//             delivery: false,
-//             open: false,
-//             click: false,
-//             reject: false,
-//             bounce: false,
-//             complaint: false,
-//           });
-
-//           const awsSendParams = {
-//             Destination: {
-//               ToAddresses: prospect.contacts,
-//             },
-//             Source: sendFrom,
-//             Template: campaign.id,
-//             TemplateData: `{"name": ${prospect.name}, "surname": ${prospect.surname}}`,
-//             ReplyToAddresses: [replyTo],
-//             ConfigurationSetName: 'Marketing',
-//             Tags: [
-//               {
-//                 Name: 'marketing-campaign',
-//                 Value: campaignRef,
-//               },
-//               {
-//                 Name: 'business',
-//                 Value: businessRef,
-//               },
-//               {
-//                 Name: 'marketing-campaign-email',
-//                 Value: docRef.path,
-//               },
-//             ],
-//           };
-
-//           SES.sendTemplatedEmail(awsSendParams)
-//             .then(() => console.log(`Se envió el correo sactisvactoriamente al prospecto id: ${prospect.id}`));
-//         });
-//       }
-//     });
-//   });
