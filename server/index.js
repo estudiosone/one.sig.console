@@ -23,7 +23,7 @@ const sendTemplate = async () => {
       destinations.push(row.Email);
     })
     .on('end', async () => {
-      const templateName = 'v8vyVkmsyY4EGtc8WXvf';
+      const templateName = '5kLVZPJSJeSzGYlXbgwn';
       const source = 'El Descubrimiento RESORT CLUB <noreply@eldescubrimiento.com>';
       const replyToAddresses = [
         'El Descubrimiento RESORT CLUB <info@eldescubrimiento.com>',
@@ -42,7 +42,7 @@ const sendTemplate = async () => {
                   width="100%">
               </a>
             </div>`,
-          SubjectPart: 'Vacaciones de invierno',
+          SubjectPart: 'Vacaciones de invierno | FALTAN POCOS DIAS!!!',
         },
       });
       await send({
