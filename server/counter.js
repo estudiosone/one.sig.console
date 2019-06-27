@@ -9,7 +9,7 @@ admin.initializeApp({
 });
 const db = admin.firestore();
 
-const campaign = 'IBh7MzH2FF9TjgPrjlcN';
+const campaign = 'maIoCtobdGqB05BZ32Kc';
 // db.collection('marketing-campaign-email').where('open', '==', true)
 //   .onSnapshot((querySnapshot) => {
 //     const emails = [];
