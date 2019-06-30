@@ -1,20 +1,14 @@
 <template>
   <template-sub-page>
     <template slot="title">
-      Personas
+      Campañas
     </template>
     <template slot="actions">
       <el-button-group>
         <el-button>
           <div  style="display: flex; align-items: center;">
-            <img style="width: 24px;" src="../../../../assets/icons/color/plus.svg" alt="">
-            <span style="margin: 0 8px;">Agregar</span>
-          </div>
-        </el-button>
-        <el-button @click="$refs.file.click()">
-          <div  style="display: flex; align-items: center;">
-            <img style="width: 24px;" src="../../../../assets/icons/color/import-csv.svg" alt="">
-            <span style="margin: 0 8px;">Importar</span>
+            <img style="width: 24px;" src="../../assets/icons/color/plus.svg" alt="">
+            <span style="margin: 0 8px;">Nueva campaña</span>
           </div>
         </el-button>
       </el-button-group>
@@ -23,22 +17,32 @@
       <el-table
         style="width: 100%;"
         empty-text="Upss! aca no hay nadie...!!!"
-        :data="tableData">
+        v-loading="this.$store.getters['marketing/campaign/loading']"
+        :data="list">
+        <el-table-column type="expand">
+          <template slot-scope="scope">
+            <el-steps
+              :active="scope.row.stepState"
+              align-center
+              finish-status="success">
+              <el-step title="Editada"></el-step>
+              <el-step title="Autorizada"></el-step>
+              <el-step title="Procesada"></el-step>
+              <el-step title="Enviada"></el-step>
+            </el-steps>
+          </template>
+        </el-table-column>
         <el-table-column
           type="selection"/>
         <el-table-column
-          label="Nombre"
-          property="name"/>
+          label="Nombre de la campaña"
+          property="name"
+          width="200px"/>
         <el-table-column
-          label="Apellido"
-          property="surname"/>
+          label="Fecha"
+          property="timestamp"/>
         <el-table-column
-          label="Tipo Documento"
-          property="documentType"/>
-        <el-table-column
-          label="Documento"
-          property="document"/>
-        <el-table-column>
+        width="160px">
           <template slot-scope="scope">
             <el-button
               size="mini"
@@ -55,40 +59,29 @@
           </template>
         </el-table-column>
       </el-table>
-      <input type="file" ref="file" style="display: none" @change="handleFileChange">
     </template>
   </template-sub-page>
 </template>
 
 <script>
 export default {
-  data() {
-    return {
-      tableData: [
-        {
-          id: '1',
-          name: 'Diego',
-          surname: 'Rodriguez',
-          documentType: 'CI-UY',
-          document: '47378274',
-        },
-        {
-          id: '3',
-          name: 'Elbio',
-          surname: 'Auza',
-          documentType: 'CI-UY',
-          document: '',
-        },
-      ],
-      multipleSelection: [
-
-      ],
-    };
+  computed: {
+    list: {
+      get() {
+        return this.$store.getters['marketing/campaign/list'];
+      },
+    },
+  },
+  mounted() {
+    this.$store.dispatch('marketing/campaign/init');
+  },
+  destroyed() {
+    this.$store.commit('marketing/campaign/set_list', []);
   },
   methods: {
     handleOpenRecord(id) {
       this.$router.push({
-        path: '/settings/basic-data/people/people-detail',
+        path: '/marketing/campaign-detail',
         query: {
           action: 'view',
           id,
@@ -97,7 +90,7 @@ export default {
     },
     handleEditRecord(id) {
       this.$router.push({
-        path: '/settings/basic-data/people/people-detail',
+        path: '/marketing/campaign-detail',
         query: {
           action: 'edit',
           id,

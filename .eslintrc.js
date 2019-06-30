@@ -4,6 +4,7 @@ module.exports = {
     node: true,
   },
   extends: [
+    'plugin:security/recommended',
     'plugin:vue/essential',
     '@vue/airbnb',
   ],
@@ -22,4 +23,6 @@ module.exports = {
   parserOptions: {
     parser: 'babel-eslint',
   },
+  plugins: [
+  ],
 };

@@ -1,0 +1,20 @@
+{
+  "name": "one.sig.services.ses",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "array-events": "^1.0.0",
+    "aws-sdk": "^2.437.0",
+    "csv-parser": "^2.2.0",
+    "csv-writer": "^1.3.0",
+    "express": "^4.16.4",
+    "firebase-admin": "^7.2.0",
+    "node-persistent-queue": "^0.3.1"
+  }
+}

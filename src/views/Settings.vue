@@ -6,7 +6,8 @@
         <el-breadcrumb-item>Configuración</el-breadcrumb-item>
         <el-breadcrumb-item v-if="route.startsWith('/settings/basic-data')">Datos básicos</el-breadcrumb-item>
         <el-breadcrumb-item v-if="route.startsWith('/settings/basic-data/people')">Personas</el-breadcrumb-item>
-        <el-breadcrumb-item v-if="route.startsWith('/settings/basic-data/people/people')">Personas</el-breadcrumb-item>
+        <el-breadcrumb-item v-if="route.startsWith('/settings/basic-data/people/people-list')">Listado</el-breadcrumb-item>
+        <el-breadcrumb-item v-if="route.startsWith('/settings/basic-data/people/people-detail')">Detalle</el-breadcrumb-item>
       </el-breadcrumb>
     </template>
     <template slot="title">Configuración</template>
@@ -21,7 +22,7 @@
           <template slot="title">Datos básicos</template>
           <el-submenu index="/settings/basic-data/people">
             <template slot="title">Personas</template>
-            <el-menu-item index="/settings/basic-data/people/people">Personas</el-menu-item>
+            <el-menu-item index="/settings/basic-data/people/people-list">Personas</el-menu-item>
           </el-submenu>
         </el-submenu>
       </el-menu>
